@@ -2,9 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
-
+#include <windows.h>
 int main() {
-    setlocale(LC_ALL, "Russian");
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     std::string filename;
     char userChar;
 

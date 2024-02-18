@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <functional>
+#include <windows.h>
 
 // Функция для вычисления интеграла методом средних прямоугольников
 double integrate(std::function<double(double)> f, double a, double b, int n = 1000) {
@@ -22,7 +23,8 @@ double func(double x) {
 }
 
 int main() {
-    setlocale(LC_ALL, "Russian");
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     double a = 0.0;
     double b = 1.0;
     int n1 = 1000; // Значение по умолчанию

@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-
+#include <windows.h>
 // Функция для выделения памяти и создания матрицы размерности m x n
 int** createMatrix(int m, int n) {
     int** matrix = new int* [m];
@@ -18,7 +18,8 @@ void deleteMatrix(int** matrix, int m) {
 }
 
 int main() {
-    setlocale(LC_ALL, "Russian");
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int m, n;
 
     std::cout << "Введите количество строк (m): ";

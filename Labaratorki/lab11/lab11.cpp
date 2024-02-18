@@ -1,5 +1,6 @@
-
+    
 #include <iostream>
+#include <windows.h>
 using namespace std;
  
 void rev(int);
@@ -7,7 +8,8 @@ void rev(int);
  
 int main()
 {
-    setlocale(LC_ALL, "Russian");
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int N;
  
     cout << "Введите N: ";
