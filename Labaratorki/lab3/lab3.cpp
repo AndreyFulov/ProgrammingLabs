@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -52,6 +53,7 @@ int main() {
     // Выводим исходную и преобразованную строки
     std::cout << "Исходная строка из файла: " << fileContents << std::endl;
     std::cout << "Преобразованная строка: " << resultString << std::endl;
+    system("pause");
 
     // Закрываем файл
     file.close();

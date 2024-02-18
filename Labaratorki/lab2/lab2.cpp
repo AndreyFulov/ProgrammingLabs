@@ -34,6 +34,13 @@ int main() {
             std::cin >> matrix[i][j];
         }
     }
+    std::cout << "Исходная матрица:\n";
+    for (int i = 0; i < m; ++i) {
+        for (int j = 0; j < n; ++j) {
+            std::cout << matrix[i][j] << ' ';
+        }
+        std::cout << '\n';
+    }
 
     // Найдем строки с минимальным и максимальным элементами
     int minRow = 0, maxRow = 0;
@@ -57,8 +64,7 @@ int main() {
     matrix[minRow] = matrix[maxRow];
     matrix[maxRow] = tempRow;
 
-    // Выводим исходную и результирующую матрицы
-    std::cout << "Исходная матрица:\n";
+    std::cout << "Результирующая матрица:\n";
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
             std::cout << matrix[i][j] << ' ';
