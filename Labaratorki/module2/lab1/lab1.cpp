@@ -1,92 +1,72 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
+#include "windows.h"
 
 struct Client {
     std::string fullName;
     std::string accountNumber;
     double balance;
-    std::string lastModifiedDate;
+    std::string lastVisit;
 };
 
-// Функция для чтения данных из файла и заполнения массива структур
+// Функция для считывания данных из файла
 std::vector<Client> readClientsFromFile(const std::string& filename) {
     std::vector<Client> clients;
     std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Ошибка открытия файла!" << std::endl;
-        return clients;
-    }
+    std::string line;
+    
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        Client client;
+        std::string balance, lastVisit;
+        
+        // Считываем ФИО в кавычках
+        std::getline(iss, client.fullName, '"');  // Пропустить первую кавычку
+        std::getline(iss, client.fullName, '"');  // Считать ФИО до следующей кавычки
+        iss >> client.accountNumber >> client.balance >> client.lastVisit;
 
-    Client client;
-    while (file >> client.fullName >> client.accountNumber >> client.balance >> client.lastModifiedDate) {
         clients.push_back(client);
     }
-
-    file.close();
+    
     return clients;
 }
 
-// Функция для подсчета количества клиентов с балансом больше заданной суммы и последним посещением в заданном месяце
-int countClientsWithBalanceAndDate(const std::vector<Client>& clients, double targetBalance, const std::string& targetMonth) {
-    int count = 0;
+// Функция для вывода клиентов, удовлетворяющих условиям
+void printClients(const std::vector<Client>& clients, double amount, const std::string& currentDate) {
+    std::string currentMonth = currentDate.substr(0, 7); // "YYYY-MM"
+    std::vector<std::string> eligibleClients;
+    
     for (const auto& client : clients) {
-        if (client.balance > targetBalance) {
-            std::string clientMonth = client.lastModifiedDate.substr(3, 2); // Получаем месяц из даты последнего изменения
-            if (clientMonth == targetMonth) {
-                count++;
-            }
+        if (client.balance > amount && client.lastVisit.substr(0, 7) == currentMonth) {
+            eligibleClients.push_back(client.fullName);
         }
     }
-    return count;
-}
-
-// Функция для вывода фамилий клиентов с балансом больше заданной суммы и последним посещением в заданном месяце
-void printClientsWithBalanceAndDate(const std::vector<Client>& clients, double targetBalance, const std::string& targetMonth) {
-    std::vector<std::string> names;
-    for (const auto& client : clients) {
-        if (client.balance > targetBalance) {
-            std::string clientMonth = client.lastModifiedDate.substr(3, 2); // Получаем месяц из даты последнего изменения
-            if (clientMonth == targetMonth) {
-                names.push_back(client.fullName);
-            }
-        }
-    }
-
-    // Сортировка фамилий по алфавиту
-    std::sort(names.begin(), names.end());
-
-    // Вывод фамилий
-    for (const auto& name : names) {
+    
+    std::sort(eligibleClients.begin(), eligibleClients.end());
+    
+    for (const auto& name : eligibleClients) {
         std::cout << name << std::endl;
     }
 }
 
 int main() {
-
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
-    std::string filename = "clients.txt"; // Имя файла с данными о клиентах
-    double targetBalance; // Баланс для сравнения
-    std::string targetMonth; // Месяц для сравнения
-
-    std::cout << "Введите сумму для сравнения: ";
-    std::cin >> targetBalance;
-    std::cout << "Введите месяц для сравнения (в формате MM): ";
-    std::cin >> targetMonth;
+    std::string filename = "clients.txt";
+    double amount;
+    std::string currentDate;
+    
+    std::cout << "Введите сумму: ";
+    std::cin >> amount;
+    std::cout << "Введите текущую дату (формат YYYY-MM-DD): ";
+    std::cin >> currentDate;
 
     std::vector<Client> clients = readClientsFromFile(filename);
-
-    if (!clients.empty()) {
-        int count = countClientsWithBalanceAndDate(clients, targetBalance, targetMonth);
-        std::cout << "Количество клиентов с балансом больше " << targetBalance << " и посещавших банк в " << targetMonth << " месяце: " << count << std::endl;
-        std::cout << "Фамилии клиентов в алфавитном порядке:" << std::endl;
-        printClientsWithBalanceAndDate(clients, targetBalance, targetMonth);
-    } else {
-        std::cout << "Ошибка чтения данных из файла." << std::endl;
-    }
+    printClients(clients, amount, currentDate);
 
     return 0;
 }
