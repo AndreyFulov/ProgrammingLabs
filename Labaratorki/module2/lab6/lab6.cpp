@@ -1,52 +1,109 @@
 #include <iostream>
-#include <list>
+#include "windows.h"
 
-void josephus(int n, int k) {
-    // Создаем список для хранения номеров ребят
-    std::list<int> circle;
+class CircularList {
+private:
+    struct Node {
+        int value;
+        Node* next;
 
-    // Заполняем список номерами ребят от 1 до N
-    for (int i = 1; i <= n; ++i) {
-        circle.push_back(i);
+        Node(int val, Node* nxt = nullptr) : value(val), next(nxt) {}
+    };
+
+    Node* head; // Указатель на начальный узел
+    Node* tail; // Указатель на последний узел
+    int size;   // Количество элементов в списке
+
+public:
+    CircularList() : head(nullptr), tail(nullptr), size(0) {}
+
+    ~CircularList() {
+        while (size > 0) {
+            remove(1);
+        }
     }
 
-    // Итератор, указывающий на начало списка
-    std::list<int>::iterator it = circle.begin();
+    void add(int value) {
+        Node* newNode = new Node(value);
+        if (size == 0) {
+            head = tail = newNode;
+            tail->next = head;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+            tail->next = head;
+        }
+        size++;
+    }
 
-    // Пока список не опустеет
-    while (!circle.empty()) {
-        // Перемещаем итератор на k-1 шагов вперед
-        for (int i = 0; i < k - 1; ++i) {
-            if (it == circle.end()) {
-                // Если достигли конца списка, переходим к началу
-                it = circle.begin();
+    int remove(int k) {
+        Node* current = head;
+        Node* prev = tail;
+
+        // Находим k-й узел
+        for (int i = 1; i < k; ++i) {
+            prev = current;
+            current = current->next;
+        }
+
+        int removedValue = current->value;
+
+        if (size == 1) {
+            head = tail = nullptr;
+        } else {
+            if (current == head) {
+                head = head->next;
             }
-            ++it;
+            if (current == tail) {
+                tail = prev;
+            }
+            prev->next = current->next;
         }
 
-        // Выводим номер удаляемого ребенка
-        std::cout << *it << " ";
+        delete current;
+        size--;
 
-        // Удаляем ребенка из списка
-        it = circle.erase(it);
-
-        // Если достигли конца списка, переходим к началу
-        if (it == circle.end()) {
-            it = circle.begin();
-        }
+        return removedValue;
     }
+
+    bool empty() const {
+        return size == 0;
+    }
+
+    int getSize() const {
+        return size;
+    }
+};
+
+void josephus(int N, int k) {
+    CircularList list;
+
+    // Заполняем список
+    for (int i = 1; i <= N; i++) {
+        list.add(i);
+    }
+
+    std::cout << "Порядок удаления ребят из круга: ";
+    int currentIndex = 1;
+    while (!list.empty()) {
+        currentIndex = (currentIndex + k - 1) % list.getSize();
+        if (currentIndex == 0) currentIndex = list.getSize(); // Если k % N == 0
+        int removed = list.remove(currentIndex);
+        std::cout << removed << " ";
+    }
+    std::cout << std::endl;
 }
 
 int main() {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     int N, k;
     std::cout << "Введите количество ребят (N): ";
     std::cin >> N;
     std::cout << "Введите номер шага (k): ";
     std::cin >> k;
 
-    std::cout << "Порядок удаления ребят из круга: ";
     josephus(N, k);
-    std::cout << std::endl;
 
     return 0;
 }

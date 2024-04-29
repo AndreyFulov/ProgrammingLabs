@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "windows.h"
 
 template<typename T>
 class Array {
@@ -118,6 +119,8 @@ void reverseArray(std::string& line) {
 }
 
 int main() {
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
     std::string line;
     std::ifstream file("numbers.txt");
 
